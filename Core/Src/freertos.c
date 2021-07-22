@@ -60,28 +60,62 @@ osThreadId_t LED0_ToggleHandle;
 const osThreadAttr_t LED0_Toggle_attributes = {
   .name = "LED0_Toggle",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityHigh4,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for LED1_Toggle */
 osThreadId_t LED1_ToggleHandle;
 const osThreadAttr_t LED1_Toggle_attributes = {
   .name = "LED1_Toggle",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityRealtime4,
+  .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for TFT_CMD_Process */
 osThreadId_t TFT_CMD_ProcessHandle;
 const osThreadAttr_t TFT_CMD_Process_attributes = {
   .name = "TFT_CMD_Process",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow3,
+  .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for FLASH_Data_Auto */
 osThreadId_t FLASH_Data_AutoHandle;
 const osThreadAttr_t FLASH_Data_Auto_attributes = {
   .name = "FLASH_Data_Auto",
   .stack_size = 128 * 4,
-  .priority = (osPriority_t) osPriorityLow2,
+  .priority = (osPriority_t) osPriorityNormal,
+};
+/* Definitions for LED2_Toggle */
+osThreadId_t LED2_ToggleHandle;
+const osThreadAttr_t LED2_Toggle_attributes = {
+  .name = "LED2_Toggle",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityRealtime,
+};
+/* Definitions for MainTask */
+osThreadId_t MainTaskHandle;
+const osThreadAttr_t MainTask_attributes = {
+  .name = "MainTask",
+  .stack_size = 128 * 4,
+  .priority = (osPriority_t) osPriorityAboveNormal7,
+};
+/* Definitions for USART1_RX */
+osMessageQueueId_t USART1_RXHandle;
+const osMessageQueueAttr_t USART1_RX_attributes = {
+  .name = "USART1_RX"
+};
+/* Definitions for SAMPLE_FINISHED */
+osSemaphoreId_t SAMPLE_FINISHEDHandle;
+const osSemaphoreAttr_t SAMPLE_FINISHED_attributes = {
+  .name = "SAMPLE_FINISHED"
+};
+/* Definitions for TFT_RX_LED */
+osSemaphoreId_t TFT_RX_LEDHandle;
+const osSemaphoreAttr_t TFT_RX_LED_attributes = {
+  .name = "TFT_RX_LED"
+};
+/* Definitions for TFT_TX_LED */
+osSemaphoreId_t TFT_TX_LEDHandle;
+const osSemaphoreAttr_t TFT_TX_LED_attributes = {
+  .name = "TFT_TX_LED"
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -94,6 +128,8 @@ void StartLED0Toggle(void *argument);
 void StartLED1Toggle(void *argument);
 void TFT_CMD_Process_Start(void *argument);
 void FLASH_Data_AutoUpdate_Start(void *argument);
+void StartLED2Toggle(void *argument);
+void MainTask_Start(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -111,6 +147,16 @@ void MX_FREERTOS_Init(void) {
   /* add mutexes, ... */
   /* USER CODE END RTOS_MUTEX */
 
+  /* Create the semaphores(s) */
+  /* creation of SAMPLE_FINISHED */
+  SAMPLE_FINISHEDHandle = osSemaphoreNew(1, 1, &SAMPLE_FINISHED_attributes);
+
+  /* creation of TFT_RX_LED */
+  TFT_RX_LEDHandle = osSemaphoreNew(10, 10, &TFT_RX_LED_attributes);
+
+  /* creation of TFT_TX_LED */
+  TFT_TX_LEDHandle = osSemaphoreNew(10, 10, &TFT_TX_LED_attributes);
+
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
@@ -118,6 +164,10 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of USART1_RX */
+  USART1_RXHandle = osMessageQueueNew (5, sizeof(CMD_MAX_SIZE), &USART1_RX_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -138,6 +188,12 @@ void MX_FREERTOS_Init(void) {
 
   /* creation of FLASH_Data_Auto */
   FLASH_Data_AutoHandle = osThreadNew(FLASH_Data_AutoUpdate_Start, NULL, &FLASH_Data_Auto_attributes);
+
+  /* creation of LED2_Toggle */
+  LED2_ToggleHandle = osThreadNew(StartLED2Toggle, NULL, &LED2_Toggle_attributes);
+
+  /* creation of MainTask */
+  MainTaskHandle = osThreadNew(MainTask_Start, NULL, &MainTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -237,6 +293,42 @@ __weak void FLASH_Data_AutoUpdate_Start(void *argument)
     osDelay(1);
   }
   /* USER CODE END FLASH_Data_AutoUpdate_Start */
+}
+
+/* USER CODE BEGIN Header_StartLED2Toggle */
+/**
+* @brief Function implementing the LED2_Toggle thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_StartLED2Toggle */
+__weak void StartLED2Toggle(void *argument)
+{
+  /* USER CODE BEGIN StartLED2Toggle */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartLED2Toggle */
+}
+
+/* USER CODE BEGIN Header_MainTask_Start */
+/**
+* @brief Function implementing the MainTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_MainTask_Start */
+__weak void MainTask_Start(void *argument)
+{
+  /* USER CODE BEGIN MainTask_Start */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END MainTask_Start */
 }
 
 /* Private application code --------------------------------------------------*/

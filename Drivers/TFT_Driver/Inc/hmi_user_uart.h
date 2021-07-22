@@ -10,7 +10,7 @@
 #include "stm32f4xx_it.h"     //根据用户MCU进行修改
 #include "base.h"
 
-void TFT_Init(void);
+void TFT_Init(u8* buf);
 
 void Param_Update(void);
 

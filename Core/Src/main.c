@@ -41,7 +41,6 @@
 #include "hmi_driver.h"
 #include "ADS8688.h"
 #include "AD9959.h"
-#include "stdio.h"
 #include "output.h"
 #include "arm_math.h"
 #include "arm_const_structs.h"
@@ -81,44 +80,6 @@ void MX_FREERTOS_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-//---------------------------------DEBUG--------------------------------
-#define TFT
-//#define VSOC
-
-#define SAMPLE_POINT_MAX 2048 //采样点数
-float FFT_INPUT [SAMPLE_POINT_MAX];
-float FFT_OUTPUT[SAMPLE_POINT_MAX];
-float FFT_OUTPUT_REAL[SAMPLE_POINT_MAX];
-float WAVE[SAMPLE_POINT_MAX];
-
-float freq = 1000.0f,L_freq = 1000.0f;
-float mv   =300.0f,L_mv = 300.0f;
-
-//-----------------------------标志---------------------------------------
-extern u8 SAMPLE_END_FLAG;    //采样结束标记
-//------------------------------------------------------------------------
-
-//-----------------------------变量---------------------------------------
-extern u16 SAMPLE_POINT;       //将要采样的点数
-extern s32 BUF[SAMPLE_POINT_MAX];
-
-float CH_VPP_VALUE[5] = {0};
-float SCAN_VPP[200];
-float SCAN_MAX;
-u32   SCAN_MAX_INDEX;
-u8    DATA_SHOW[116];
-u8    mode = 0; //当前模式 0-待机 1-测量数据 2-幅频特性 3-故障检测
-
-float test = 500.0f;
-
-//----------------------------可储存变量------------------------------------------
-SVAR Svar = {
-  /*float FFT_COMPENSATE; //补偿FFT的误差*/909.09090909f,
-  /*float RMS_COMPENSATE; //补偿RMS     */1134.0f,
-  /*float DC_COMPENSATE;  //FFT的直流补偿*/0.25473997f,
-  /*float ADS_OFFSET;     //ADS偏置补偿  */32.2000008f,
-  /*float C3_NORMAL;      //C3*/98.0f
-};
 
 /* USER CODE END 0 */
 
@@ -158,15 +119,13 @@ int main(void)
   MX_DAC_Init();
   MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
-  //无时耗
   W25QXX_Init();
   //LCD_Init();
   //font_init();
   //tp_dev.init();
-  TFT_Init();
+  TFT_Init(&RxBuffer);
   DATA_INIT();
   Init_AD9959();
-  //时耗
   Out_freq(2, 10);
   Out_mV(2, 300);
 
@@ -237,7 +196,7 @@ void SystemClock_Config(void)
 
 /* USER CODE END 4 */
 
- /**
+/**
   * @brief  Period elapsed callback in non blocking mode
   * @note   This function is called  when TIM2 interrupt took place, inside
   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment

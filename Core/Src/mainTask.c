@@ -2,11 +2,13 @@
 #include "cmsis_os.h"
 #include "cmd_process.h"
 
-void mainTask_Start(void const *argument) {
+void MainTask_Start(void const *argument) {
 	for(;;){
 		switch(mode)
 		{
-		case 1:break;
+		case 1:
+//			xSemaphoreTake(SAMPLE_FINISHED,portMAX_DELAY);
+			break;
 		case 2:break;
 		case 3:break;
 		}

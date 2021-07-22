@@ -28,11 +28,9 @@
 #include "base.h"
 #include "usart.h"
 
-u8 RxBuffer;
-
-void TFT_Init(void)
+void TFT_Init(u8* buf)
 {
-    HAL_UART_Receive_IT(&huart1, &RxBuffer, 1);//使能接收中断
+    HAL_UART_Receive_IT(&huart1, buf, 1);//使能接收中断
     queue_reset();
 }
 

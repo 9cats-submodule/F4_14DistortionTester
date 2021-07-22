@@ -38,19 +38,7 @@ extern "C" {
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#pragma pack(push)
-#pragma pack(1)	//°´×Ö½Ú¶ÔÆë
-typedef struct _SVAR
-{
-  float FFT_COMPENSATE; //²¹³¥FFTµÄÎó²î
-  float RMS_COMPENSATE; //²¹³¥RMS
-  float DC_COMPENSATE;  //FFTµÄÖ¸Áî²¹³¥
-  float ADS_OFFSET;     //ADSÆ«ÖÃ²¹³¥
-  float C3_NORMAL;      //C3
-}SVAR;
-#pragma pack(pop)
-extern SVAR Svar;
-extern uint8_t mode;
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

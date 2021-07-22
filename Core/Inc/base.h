@@ -18,10 +18,13 @@
 #include "usart.h"
 #include "cmsis_os.h"
 #include "queue.h"
+#include "semphr.h"
 #include "data.h"
 
-#define ON 1
+#define ON  1
 #define OFF 0
+#define YES 1
+#define NO  0
 
 // LEDµÁ∆Ω…Ë÷√ 0-¡¡ 1-√
 #define LED0(n) (n?HAL_GPIO_WritePin(LED0_GPIO_Port,LED0_Pin,GPIO_PIN_SET):HAL_GPIO_WritePin(LED0_GPIO_Port,LED0_Pin,GPIO_PIN_RESET))

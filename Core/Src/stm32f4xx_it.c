@@ -63,26 +63,14 @@
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
+//----------ADS8688接收和发送BUF--------------
+static u8  rxbuf [4]    = {0};
+static u8  txbuf [2]    = {0};
+//-------------------------------------------
 
-//------------接收和发送BUF--------------
-u8  rxbuf [4]    = {0};
-u8  txbuf [2]    = {0};
-//----------------------------------------
-
-//---------------标志-------------------------------------
-u8 ADS8688_BUSY = 0;     //ADS8688 DMA接收还未完成
-u8 SAMPLE_END_FLAG = 0;  //采样结束标记
+//-----------------仅本文件标志--------------------------
+static u8 ADS8688_BUSY = 0;     //ADS8688 DMA接收还未完成
 //--------------------------------------------------------
-
-//---------------------------变量-------------------------------
-#define SAMPLE_POINT_MAX 2048 //采样点数最大
-u16 SAMPLE_POINT= 0;          //将要采样的点数
-u32 BUF[SAMPLE_POINT_MAX] = {0};
-//--------------------------------------------------------------
-
-//---------------DEBUG用-------------------
-//---------------------------------------
-
 
 /* USER CODE END 0 */
 
@@ -230,7 +218,9 @@ void DMA1_Stream5_IRQHandler(void)
 void TIM1_UP_TIM10_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
+  static portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
   static u16 i=0;
+  static u8  IS_FIRST = 1; //是否第一次进入中断 （第一次进入中断无法获取到值）
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
   HAL_TIM_IRQHandler(&htim1);
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 1 */
@@ -239,25 +229,24 @@ void TIM1_UP_TIM10_IRQHandler(void)
     //开启下一次扫描
     ADS8688_BUSY = 1;
     SAMPLE_BEGIN;  //重新拉低CS，ADS8688开始运输
-    if(i<SAMPLE_POINT+10 && i>=10)
-    {
-      BUF[i-10] = *(u16*)(&rxbuf[2])-0x8000;  //取出采样值到BUF中
-	  HAL_SPI_TransmitReceive_DMA(&hspi3, txbuf, rxbuf, 2);
-	  i++;
-    }
-    if(i < 10)     //i=0时不采值
-    {
-  	  HAL_SPI_TransmitReceive_DMA(&hspi3, txbuf, rxbuf, 2);
-  	  i++;
-    }
-    if(i == SAMPLE_POINT+10)
-    {
-      //定时器任务结束
-      i=0;
-      SAMPLE_END_FLAG = 1;
-      HAL_TIM_Base_Stop_IT(&htim1);
-      __HAL_TIM_SET_COUNTER(&htim1,0);
-    }
+  	if(IS_FIRST == YES)
+  	{
+  		HAL_SPI_TransmitReceive_DMA(&hspi3, txbuf, rxbuf, 2);
+  		IS_FIRST = NO;
+  	}
+  	else
+  	{
+  		ADS8688_BUF[i++] = *(u16*)(&rxbuf[2])-0x8000;  //取出采样值到BUF中
+  		HAL_SPI_TransmitReceive_DMA(&hspi3, txbuf, rxbuf, 2);
+  		if(i == SAMPLE_POINT)
+  		{
+  			//定时器任务结束
+  			i=0;
+  			xSemaphoreGiveFromISR(SAMPLE_FINISHEDHandle,&xHigherPriorityTaskWoken);
+  			HAL_TIM_Base_Stop_IT(&htim1);
+  			__HAL_TIM_SET_COUNTER(&htim1,0);
+  		}
+  	}
   }
   else
   {
@@ -307,7 +296,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		queue_push(RxBuffer);
 		if(queue_find_cmd(cmd_buffer,CMD_MAX_SIZE))
 		{
-			xQueueSendToBackFromISR(USART1_RX,cmd_buffer,&xHigherPriorityTaskWoken);
+			xQueueSendToBackFromISR(USART1_RXHandle,cmd_buffer,&xHigherPriorityTaskWoken);
 			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 		}
 		HAL_UART_Receive_IT(&huart1, &RxBuffer, 1);

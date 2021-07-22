@@ -65,7 +65,7 @@ void END_CMD()
 
 #define SEND_DATA(P) SendChar(P)
 #define BEGIN_CMD() TX_8(0XEE)
-#define END_CMD() TX_32(0XFFFCFFFF)
+#define END_CMD() TX_32(0XFFFCFFFF),osSemaphoreRelease(TFT_TX_LEDHandle)
 
 #endif
 
