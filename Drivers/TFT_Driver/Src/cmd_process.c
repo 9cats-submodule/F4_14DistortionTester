@@ -150,16 +150,16 @@ void NotifyButton(uint16 screen_id, uint16 control_id, uint8 state, void *userda
   if(state==1)
   {
 	if(screen_id == 1 && control_id == 52)
-	  mode = 1;
+		MODE = 1;
 	if(screen_id == 1 && control_id == 53)
-	  mode = 2;
+		MODE = 2;
 	if(screen_id == 1 && control_id == 54)
-	  mode = 3;
+		MODE = 3;
   }
   else
   {
 	if(screen_id == 1 && (control_id == 52 || control_id == 53 || control_id == 54))
-		mode = 0;
+		MODE = 0;
   }
 }
 

@@ -10,14 +10,12 @@ SVAR Svar = {
 };
 
 //全局通用变量
-u8 mode = 0;
-
-xSemaphoreHandle SAMPLE_FINISHED = {0}; //采样结束
+u8 MODE = 0;   //当前模式
+u8 CH_NUM = 0; //所选通道总数
 
 //用于 ADS8688 采样
-#define SAMPLE_POINT_MAX 2048
-u16 SAMPLE_POINT      =  0;
-u16 ADS8688_BUF[2048] = {0};
+u32 SAMPLE_POINT      =  0;
+u16 ADS8688_BUF[SAMPLE_CH_MAX][SAMPLE_POINT_MAX] = {0};
 
 //FFT变换BUF
 

@@ -36,7 +36,5 @@ void TFT_Init(u8* buf)
 
 void  SendChar(uchar t)
 {
-    USART1->DR = (t & (uint16_t)0x01FF);
-    while(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TXE) == RESET);
-    while(__HAL_UART_GET_FLAG(&huart1, UART_FLAG_TC) == RESET);
+	HAL_UART_Transmit(&huart1, &t, 1, 1);
 }

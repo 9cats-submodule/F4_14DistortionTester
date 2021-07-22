@@ -32,7 +32,6 @@
 /* USER CODE BEGIN Includes */
 #include "base.h"
 #include "lcd.h"
-#include "math.h"
 #include "text.h"
 #include "touch.h"
 #include "w25qxx.h"
@@ -54,10 +53,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define TP_CHECK(x0,y0,x1,y1) tp_dev.x[0] > x0 && tp_dev.y[0] > y0 && tp_dev.x[0] < x1 && tp_dev.y[0] < y1
-#define SAMPLE_BEGIN PAout(15)=0;
-#define SAMPLE_END   PAout(15)=1;
-#define RELAY_NO HAL_GPIO_WritePin(RELAY_IN_GPIO_Port, RELAY_IN_Pin, GPIO_PIN_SET);
-#define RELAY_NC HAL_GPIO_WritePin(RELAY_IN_GPIO_Port, RELAY_IN_Pin, GPIO_PIN_RESET);
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -125,9 +121,9 @@ int main(void)
   //tp_dev.init();
   TFT_Init(&RxBuffer);
   DATA_INIT();
-  Init_AD9959();
-  Out_freq(2, 10);
-  Out_mV(2, 300);
+//  Init_AD9959();
+//  Out_freq(2, 10);
+//  Out_mV(2, 300);
 
   /* USER CODE END 2 */
 

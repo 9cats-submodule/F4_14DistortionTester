@@ -12,7 +12,7 @@ void FLASH_Data_AutoUpdate_Start(void *arguement)	{
 	for(;;)
 	{
 		DATA_UPDATE();
-		vTaskDelay_ms(100);
+		osDelay(100);
 	}
 }
 
@@ -21,32 +21,33 @@ void FLASH_Data_AutoUpdate_Start(void *arguement)	{
  *  \details  当USART1串口接收到TFT的指令时接触阻塞
  */
 void TFT_CMD_Process_Start(void *argument)	{
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 	CTRL_MSG   TFT_CMD_MSG = {0};
 
   for(;;)
   {
-  	if(xQueueReceiveFromISR(USART1_RXHandle, &TFT_CMD_MSG, &xHigherPriorityTaskWoken) == pdPASS)
+  	if(USART1_RXHandle != NULL)
   	{
-  		ProcessMessage(&TFT_CMD_MSG,0);
-			osSemaphoreRelease(TFT_RX_LEDHandle);
+  		if(osMessageQueueGet(USART1_RXHandle, &TFT_CMD_MSG, 0, 0) == osOK)
+  		{
+  				ProcessMessage(&TFT_CMD_MSG,0);
+  				osSemaphoreRelease(TFT_RX_LEDHandle);
+  		}
+  		osDelay(20);
   	}
-  	vTaskDelay_ms(30);
+  	osDelay(20);
   }
 }
 
 /*!
- *  \brief    TFT-发送 LED1 闪烁
- *  \details  每次发送一次指令,LED1闪烁一次，持续0.05 s
+ *  \brief    TFT-发送 LED0 闪烁
+ *  \details  每次发送一次指令, LED0 闪烁一次，持续0.02 s
  */
 void StartLED0Toggle(void const *argument) {
-//	osSemaphoreId semaphore = (osSemaphoreId) argument;
-
 	for (;;) {
 		if(osSemaphoreAcquire(TFT_TX_LEDHandle , 0) == osOK)
 		{
 			LED0_ON;
-  		osDelay(20);
+			osDelay(20);
 			LED0_OFF;
 		}
 		osDelay(20);
@@ -54,12 +55,10 @@ void StartLED0Toggle(void const *argument) {
 }
 
 /*!
- *  \brief    TFT-LED2闪烁
- *  \details  每处理一次指令,LED2闪烁一次,持续 0.1 秒
+ *  \brief    TFT-接收 LED1 闪烁
+ *  \details  每处理一次指令, LED1 闪烁一次,持续 0.02 s
  */
 void StartLED1Toggle(void const *argument) {
-//	osSemaphoreId semaphore = (osSemaphoreId) argument;
-
   for (;;) {
 		if(osSemaphoreAcquire(TFT_RX_LEDHandle , 0) == osOK)
   	{
@@ -67,13 +66,12 @@ void StartLED1Toggle(void const *argument) {
     	osDelay(20);
     	LED1_OFF;
   	}
-  	osDelay(20);
+		osDelay(20);
   }
 }
 
 /*!
- *  \brief    TFT-LED2闪烁
- *  \details  每处理一次指令,LED2闪烁一次,持续 0.1 秒
+ *  \brief    0.6s LED2 闪烁一次
  */
 void StartLED2Toggle(void *argument)	{
   for(;;)

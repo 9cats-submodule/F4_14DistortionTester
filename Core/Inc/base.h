@@ -20,6 +20,7 @@
 #include "queue.h"
 #include "semphr.h"
 #include "data.h"
+#include "output.h"
 
 #define ON  1
 #define OFF 0

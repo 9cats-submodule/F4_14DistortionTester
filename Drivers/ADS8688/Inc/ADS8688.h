@@ -3,7 +3,10 @@
 
 // include the correct file according to you MCU
 #include "stm32f4xx_hal.h"
+#include "main.h"
 
+#define SAMPLE_BEGIN HAL_GPIO_WritePin(ADS8688_CS_GPIO_Port, ADS8688_CS_Pin, GPIO_PIN_RESET);
+#define SAMPLE_END   HAL_GPIO_WritePin(ADS8688_CS_GPIO_Port, ADS8688_CS_Pin, GPIO_PIN_SET);
 
 // datasheet link
 // https://www.ti.com/lit/ds/symlink/ads8668.pdf?ts=1620233637463&ref_url=https%253A%252F%252Fwww.ti.com%252Fproduct%252FADS8668
@@ -65,7 +68,7 @@ extern ADS8688 ads8688;
  * INITIALISATION
  *
  */
-uint8_t Init_ADS8688(uint8_t channel);
+uint8_t ADS8688_CONFIG(uint8_t channel,uint8_t range);
 uint8_t ADS8688_Init(ADS8688 *ads, SPI_HandleTypeDef *spiHandle, GPIO_TypeDef *csPinBank, uint16_t csPin);
 
 /*

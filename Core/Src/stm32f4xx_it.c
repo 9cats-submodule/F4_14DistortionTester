@@ -41,8 +41,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-#define SAMPLE_BEGIN PAout(15)=0;
-#define SAMPLE_END   PAout(15)=1;
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -218,7 +217,6 @@ void DMA1_Stream5_IRQHandler(void)
 void TIM1_UP_TIM10_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM1_UP_TIM10_IRQn 0 */
-  static portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
   static u16 i=0;
   static u8  IS_FIRST = 1; //是否第一次进入中断 （第一次进入中断无法获取到值）
   /* USER CODE END TIM1_UP_TIM10_IRQn 0 */
@@ -236,15 +234,17 @@ void TIM1_UP_TIM10_IRQHandler(void)
   	}
   	else
   	{
-  		ADS8688_BUF[i++] = *(u16*)(&rxbuf[2])-0x8000;  //取出采样值到BUF中
+  		ADS8688_BUF[i%CH_NUM][i/CH_NUM] = *(u16*)(&rxbuf[2])-0x8000; //将采样值储存在BUF中
   		HAL_SPI_TransmitReceive_DMA(&hspi3, txbuf, rxbuf, 2);
-  		if(i == SAMPLE_POINT)
+
+  		if(++i == SAMPLE_POINT)
   		{
   			//定时器任务结束
   			i=0;
-  			xSemaphoreGiveFromISR(SAMPLE_FINISHEDHandle,&xHigherPriorityTaskWoken);
+  			IS_FIRST = YES;
   			HAL_TIM_Base_Stop_IT(&htim1);
-  			__HAL_TIM_SET_COUNTER(&htim1,0);
+
+  			osSemaphoreRelease(SAMPLE_FINISHEDHandle);
   		}
   	}
   }
@@ -287,8 +287,6 @@ void USART1_IRQHandler(void)
 /* USER CODE BEGIN 1 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
 	if (huart->Instance == USART1)
 	{
 		huart1.RxState = HAL_UART_STATE_READY;
@@ -296,8 +294,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 		queue_push(RxBuffer);
 		if(queue_find_cmd(cmd_buffer,CMD_MAX_SIZE))
 		{
-			xQueueSendToBackFromISR(USART1_RXHandle,cmd_buffer,&xHigherPriorityTaskWoken);
-			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+			osMessageQueuePut(USART1_RXHandle,cmd_buffer,0,0);
 		}
 		HAL_UART_Receive_IT(&huart1, &RxBuffer, 1);
 	}

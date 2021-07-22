@@ -6,14 +6,14 @@ ADS8688 ads8688;
 /*
  * INITIALISATION
  */
-uint8_t Init_ADS8688(uint8_t channel)
+uint8_t ADS8688_CONFIG(uint8_t channel,uint8_t range)
 {
-	/* Store interface parameters in struct */
-	ADS8688* ads;
-	ads = &ads8688;
-	ads->spiHandle 		= &hspi3;
-	ads->csPinBank 	= ADS8688_CS_GPIO_Port;
-	ads->csPin 		= ADS8688_CS_Pin;
+    /* Store interface parameters in struct */
+    ADS8688* ads;
+    ads = &ads8688;
+    ads->spiHandle 		= &hspi3;
+    ads->csPinBank 	= ADS8688_CS_GPIO_Port;
+    ads->csPin 		= ADS8688_CS_Pin;
 
     uint8_t ads_data[2] = {0};
     uint8_t state = 0;
@@ -31,9 +31,12 @@ uint8_t Init_ADS8688(uint8_t channel)
     ads_data[0] = 0x03; // here i chose id = 0, alarm = disabled and SDO_format = 3 (datasheet page 56)
     state += ADS_Prog_Write(ads, FEATURE_SELECT, ads_data);
     // set all channels ranges(page 57)
+    // 0x00 -> ¡À2.5 x VREF
+    // 0x01 -> ¡À1.25 x VREF
+    // 0x02 -> ¡À0.625 x VREF
     // 0x05 -> Input range is set to 0 to 2.5 x VREF (for VREF=5 volts, this means 0-10 volts range)
     // 0x06 -> Input range is set to 0 to 1.25 x VREF (for VREF=5 volts, this means 0-5 volts range)
-    ads_data[0] = 0x00;
+    ads_data[0] = range;
     if(channel & (0x01<<0)) state += ADS_Prog_Write(ads, CHN_0_RANGE, ads_data);
     if(channel & (0x01<<1)) state += ADS_Prog_Write(ads, CHN_1_RANGE, ads_data);
     if(channel & (0x01<<2)) state += ADS_Prog_Write(ads, CHN_2_RANGE, ads_data);
