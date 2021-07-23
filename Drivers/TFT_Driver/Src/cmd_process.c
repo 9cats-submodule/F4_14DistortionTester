@@ -175,13 +175,13 @@ void NotifyText(uint16 screen_id, uint16 control_id, uint8 *str, void *userdata)
 	if ((screen_id == 0) && (control_id == 60))
 	{
 //		Svar.ADS_OFFSET = atoi((char*)str);
-		Svar.ADS_OFFSET = atoff((char*)str);
+//		Svar.ADS_OFFSET = atoff((char*)str);
 	}
 
 	if ((screen_id == 0) && (control_id == 59))
 	{
 //		Svar.ADS_OFFSET = atoi((char*)str);
-		Svar.C3_NORMAL = atoff((char*)str);
+//		Svar.C3_NORMAL = atoff((char*)str);
 	}
 }
 

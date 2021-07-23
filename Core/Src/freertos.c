@@ -94,18 +94,13 @@ const osThreadAttr_t LED2_Toggle_attributes = {
 osThreadId_t MainTaskHandle;
 const osThreadAttr_t MainTask_attributes = {
   .name = "MainTask",
-  .stack_size = 128 * 4,
+  .stack_size = 1024 * 4,
   .priority = (osPriority_t) osPriorityAboveNormal7,
 };
 /* Definitions for USART1_RX */
 osMessageQueueId_t USART1_RXHandle;
 const osMessageQueueAttr_t USART1_RX_attributes = {
   .name = "USART1_RX"
-};
-/* Definitions for SAMPLE_FINISHED */
-osSemaphoreId_t SAMPLE_FINISHEDHandle;
-const osSemaphoreAttr_t SAMPLE_FINISHED_attributes = {
-  .name = "SAMPLE_FINISHED"
 };
 /* Definitions for TFT_RX_LED */
 osSemaphoreId_t TFT_RX_LEDHandle;
@@ -148,9 +143,6 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_MUTEX */
 
   /* Create the semaphores(s) */
-  /* creation of SAMPLE_FINISHED */
-  SAMPLE_FINISHEDHandle = osSemaphoreNew(1, 1, &SAMPLE_FINISHED_attributes);
-
   /* creation of TFT_RX_LED */
   TFT_RX_LEDHandle = osSemaphoreNew(10, 10, &TFT_RX_LED_attributes);
 

@@ -234,17 +234,16 @@ void TIM1_UP_TIM10_IRQHandler(void)
   	}
   	else
   	{
-  		ADS8688_BUF[i%CH_NUM][i/CH_NUM] = *(u16*)(&rxbuf[2])-0x8000; //将采样值储存在BUF中
+  		ADS8688_BUF[i%CH_NUM][i/CH_NUM] = *(u16*)(&rxbuf[2]); //将采样值储存在BUF中
   		HAL_SPI_TransmitReceive_DMA(&hspi3, txbuf, rxbuf, 2);
 
   		if(++i == SAMPLE_POINT)
   		{
   			//定时器任务结束
   			i=0;
-  			IS_FIRST = YES;
-  			HAL_TIM_Base_Stop_IT(&htim1);
+  			SAMPLE_FINISHED = IS_FIRST = YES;
+  			__HAL_TIM_DISABLE_IT(   &htim1, TIM_IT_UPDATE);
 
-  			osSemaphoreRelease(SAMPLE_FINISHEDHandle);
   		}
   	}
   }

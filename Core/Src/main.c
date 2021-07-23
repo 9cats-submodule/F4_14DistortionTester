@@ -121,9 +121,10 @@ int main(void)
   //tp_dev.init();
   TFT_Init(&RxBuffer);
   DATA_INIT();
-//  Init_AD9959();
-//  Out_freq(2, 10);
-//  Out_mV(2, 300);
+  //Init_AD9959();
+  //Out_freq(2, 10);
+  //Out_mV(2, 300);
+  HAL_TIM_Base_Start(&htim1);
 
   /* USER CODE END 2 */
 
