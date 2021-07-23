@@ -27,6 +27,10 @@ extern osSemaphoreId_t    SAMPLE_FINISHEDHandle;
 #define SAMPLE_CH_MAX 2
 extern u32 SAMPLE_POINT;
 extern u16 ADS8688_BUF[][SAMPLE_POINT_MAX];
+//FFT变换用
+extern float FFT_INPUT[];
+extern float FFT_OUTPUT[];
+extern float FFT_OUTPUT_REAL[];
 
 //------以下基本不用动-------
 extern u8 RxBuffer; //USART1接收BUF

@@ -48,13 +48,6 @@ void AD9959_CONFIG(float freq,float mv)
 }
 
 /*!
- *  \brief    FFT变换
- */
-void FFT(void)
-{
-}
-
-/*!
  *  \brief  开启 TIM1 定时采样一定点数
  *  \param  point 每个通道的采样点数
  */
@@ -64,6 +57,23 @@ void ADS8688_SAMPLE(u16 point)
 	HAL_TIM_Base_Start_IT(&htim1);
 	while(osSemaphoreAcquire(SAMPLE_FINISHEDHandle, 0) != osOK)
 		osDelay(1);
+}
+
+/*!
+ *  \brief    FFT变换
+ */
+void FFT(void)
+{
+	arm_rfft_fast_instance_f32 S;
+	u16 i;
+
+	for(i=0;i<2048;i++)
+	{
+		FFT_INPUT[i] = (float)BUF[i]*10.24f/0x10000;
+	}
+	arm_rfft_fast_init_f32(&S,2048);                    //FFT初始化
+	arm_rfft_fast_f32(&S, FFT_INPUT, FFT_OUTPUT,0);     //FFT变化
+	arm_cmplx_mag_f32(FFT_OUTPUT,FFT_OUTPUT_REAL,2048); //求模
 }
 
 /*!

@@ -17,8 +17,10 @@ u8 CH_NUM = 0; //所选通道总数
 u32 SAMPLE_POINT      =  0;
 u16 ADS8688_BUF[SAMPLE_CH_MAX][SAMPLE_POINT_MAX] = {0};
 
-//FFT变换BUF
-
+//FFT变换用
+float FFT_INPUT[SAMPLE_POINT_MAX]      ={0};
+float FFT_OUTPUT[SAMPLE_POINT_MAX]     ={0};
+float FFT_OUTPUT_REAL[SAMPLE_POINT_MAX]={0};
 
 //------以下基本不用动-------
 u8 RxBuffer; //USART1接收BUF
