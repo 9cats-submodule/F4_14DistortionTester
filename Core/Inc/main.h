@@ -69,6 +69,16 @@ void FaultChecK(void);
 #define KEY2_GPIO_Port GPIOE
 #define TCS_Pin GPIO_PIN_13
 #define TCS_GPIO_Port GPIOC
+#define TONGLING_1_Pin GPIO_PIN_1
+#define TONGLING_1_GPIO_Port GPIOF
+#define TONGLING_2_Pin GPIO_PIN_2
+#define TONGLING_2_GPIO_Port GPIOF
+#define TONGLING_3_Pin GPIO_PIN_3
+#define TONGLING_3_GPIO_Port GPIOF
+#define TONGLING_4_Pin GPIO_PIN_4
+#define TONGLING_4_GPIO_Port GPIOF
+#define TONGLING_5_Pin GPIO_PIN_5
+#define TONGLING_5_GPIO_Port GPIOF
 #define LED0_Pin GPIO_PIN_8
 #define LED0_GPIO_Port GPIOF
 #define LED1_Pin GPIO_PIN_9

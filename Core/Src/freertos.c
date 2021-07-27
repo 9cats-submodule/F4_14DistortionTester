@@ -73,7 +73,7 @@ const osThreadAttr_t LED1_Toggle_attributes = {
 osThreadId_t TFT_CMD_ProcessHandle;
 const osThreadAttr_t TFT_CMD_Process_attributes = {
   .name = "TFT_CMD_Process",
-  .stack_size = 128 * 4,
+  .stack_size = 256 * 4,
   .priority = (osPriority_t) osPriorityHigh,
 };
 /* Definitions for FLASH_Data_Auto */
@@ -159,7 +159,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the queue(s) */
   /* creation of USART1_RX */
-  USART1_RXHandle = osMessageQueueNew (5, sizeof(CMD_MAX_SIZE), &USART1_RX_attributes);
+  USART1_RXHandle = osMessageQueueNew (5, 30, &USART1_RX_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
